@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electricity Bill Checker</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #1a0000; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.card { background: linear-gradient(160deg, #2d0000, #1a0000); border: 1px solid #5a0000; border-radius: 20px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.header { background: linear-gradient(135deg, #cc0000, #800000); padding: 28px; text-align: center; }
+.header .icon { font-size: 48px; margin-bottom: 10px; }
+.header h1 { color: white; font-size: 24px; font-weight: 700; }
+.header p { color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 6px; }
+.body { padding: 28px; }
+.form-group { margin-bottom: 18px; }
+label { display: block; font-size: 12px; font-weight: 600; color: #ff6b6b; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+select, input { width: 100%; padding: 13px 16px; border: 1px solid #5a0000; border-radius: 10px; font-size: 14px; color: #fff; background: rgba(255,255,255,0.05); outline: none; transition: all .2s; }
+select option { background: #1a0000; color: white; }
+select:focus, input:focus { border-color: #cc0000; background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(204,0,0,0.2); }
+input::placeholder { color: rgba(255,255,255,0.3); }
+.btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #cc0000, #990000); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn:hover { background: linear-gradient(135deg, #e60000, #aa0000); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(204,0,0,0.4); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.result { margin-top: 24px; display: none; }
+.result.show { display: block; }
+.result img { width: 100%; border-radius: 12px; border: 1px solid #5a0000; }
+.result .label { color: #ff6b6b; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
+.error-box { background: rgba(204,0,0,0.1); border: 1px solid #cc0000; border-radius: 10px; padding: 14px; color: #ff9999; font-size: 14px; text-align: center; margin-top: 20px; }
+.status { text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="icon">⚡</div>
+    <h1>Electricity Bill Checker</h1>
+    <p>CA number daalo — bot khud check karega</p>
+  </div>
+  <div class="body">
+    <div class="form-group">
+      <label>Electricity Provider</label>
+      <select id="provider">
+        <option value="">-- Provider Select Karo --</option>
+        <optgroup label="Delhi">
+          <option>Tata Power Delhi</option>
+          <option>BSES Rajdhani</option>
+          <option>BSES Yamuna</option>
+          <option>NDMC Delhi</option>
+        </optgroup>
+        <optgroup label="Maharashtra">
+          <option>Tata Power Mumbai</option>
+          <option>MSEDCL</option>
+          <option>BEST Mumbai</option>
+          <option>Adani Electricity Mumbai</option>
+        </optgroup>
+        <optgroup label="Karnataka">
+          <option>BESCOM Bangalore</option>
+          <option>GESCOM</option>
+          <option>HESCOM</option>
+          <option>MESCOM</option>
+          <option>CESC Mysore</option>
+        </optgroup>
+        <optgroup label="West Bengal">
+          <option>CESC Kolkata</option>
+          <option>WBSEDCL</option>
+        </optgroup>
+        <optgroup label="Tamil Nadu">
+          <option>TNEB TANGEDCO</option>
+        </optgroup>
+        <optgroup label="Kerala">
+          <option>KSEB Kerala</option>
+        </optgroup>
+        <optgroup label="Uttar Pradesh">
+          <option>UPPCL</option>
+          <option>PVVNL</option>
+          <option>DVVNL</option>
+          <option>MVVNL</option>
+          <option>PUVVNL</option>
+        </optgroup>
+        <optgroup label="Haryana">
+          <option>DHBVN Haryana</option>
+          <option>UHBVN Haryana</option>
+        </optgroup>
+        <optgroup label="Punjab">
+          <option>PSPCL Punjab</option>
+        </optgroup>
+        <optgroup label="Rajasthan">
+          <option>JVVNL Rajasthan</option>
+          <option>AVVNL</option>
+          <option>JDVVNL</option>
+        </optgroup>
+        <optgroup label="Gujarat">
+          <option>DGVCL Gujarat</option>
+          <option>MGVCL</option>
+          <option>PGVCL</option>
+          <option>UGVCL</option>
+          <option>Torrent Power Ahmedabad</option>
+        </optgroup>
+        <optgroup label="Madhya Pradesh">
+          <option>MPEB MPPKVVCL</option>
+          <option>MPMKVVCL</option>
+          <option>MPWZ MPPKVVCL</option>
+        </optgroup>
+        <optgroup label="Andhra Pradesh / Telangana">
+          <option>APEPDCL</option>
+          <option>APCPDCL</option>
+          <option>TSSPDCL Telangana</option>
+          <option>TSNPDCL</option>
+        </optgroup>
+        <optgroup label="Bihar / Jharkhand">
+          <option>BSPHCL Bihar</option>
+          <option>JBVNL Jharkhand</option>
+        </optgroup>
+        <optgroup label="Assam / North East">
+          <option>APDCL Assam</option>
+        </optgroup>
+        <optgroup label="Other">
+          <option>CSPDCL Chhattisgarh</option>
+          <option>DHBVN</option>
+          <option>NPCL Noida</option>
+          <option>Torrent Power Surat</option>
+          <option>Torrent Power Vadodara</option>
+          <option>HPSEBL Himachal Pradesh</option>
+          <option>JKPDD Jammu Kashmir</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>CA / Consumer Account Number</label>
+      <input type="text" id="caNumber" placeholder="e.g. 60036058067" maxlength="15" inputmode="numeric" />
+    </div>
+    <button class="btn" id="checkBtn" onclick="checkBill()">
+      <span id="btnText">⚡ Bill Check Karo</span>
+    </button>
+
+    <div class="result" id="result">
+      <div class="label">📸 Vi Website Par Yeh Dikh Raha Hai Bot Ko:</div>
+      <img id="screenshot" src="" alt="Bill Screenshot" />
+    </div>
+    <div class="error-box" id="errorBox" style="display:none"></div>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+
+<script>
+async function checkBill() {
+  const ca = document.getElementById('caNumber').value.trim();
+  const provider = document.getElementById('provider').value;
+  if (!ca) { document.getElementById('caNumber').focus(); return; }
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('btnText').innerHTML = '<div class="spinner"></div> Bot kaam kar raha hai...';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('status').textContent = '🤖 Bot Vi website khol raha hai...';
+
+  try {
+    const res = await fetch('/api/check-bill', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caNumber: ca, provider })
+    });
+    const data = await res.json();
+
+    if (data.success && data.screenshot) {
+      document.getElementById('screenshot').src = data.screenshot;
+      document.getElementById('result').classList.add('show');
+      document.getElementById('status').textContent = '✅ Bot ne screenshot le liya!';
+    } else {
+      document.getElementById('errorBox').textContent = '❌ ' + (data.error || 'Kuch error aayi');
+      document.getElementById('errorBox').style.display = 'block';
+      document.getElementById('status').textContent = '';
+    }
+  } catch (e) {
+    document.getElementById('errorBox').textContent = '❌ Server se connect nahi hua: ' + e.message;
+    document.getElementById('errorBox').style.display = 'block';
+  }
+
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('btnText').textContent = '⚡ Bill Check Karo';
+}
+document.getElementById('caNumber').addEventListener('keydown', e => { if(e.key==='Enter') checkBill(); });
+</script>
+</body>
+</html>
